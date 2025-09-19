@@ -1,33 +1,22 @@
-#!/usr/bin/env python3
+from flask import Flask
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+from models import db, User, Recipe   # now safe, since db is defined in models
 
-from flask import request, session
-from flask_restful import Resource
-from sqlalchemy.exc import IntegrityError
+def create_app():
+    app = Flask(__name__)
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-from config import app, db, api
-from models import User, Recipe
+    db.init_app(app)
+    migrate = Migrate(app, db)
 
-class Signup(Resource):
-    pass
+    @app.route("/")
+    def index():
+        return "Flask app is running!"
 
-class CheckSession(Resource):
-    pass
+    return app
 
-class Login(Resource):
-    pass
-
-class Logout(Resource):
-    pass
-
-class RecipeIndex(Resource):
-    pass
-
-api.add_resource(Signup, '/signup', endpoint='signup')
-api.add_resource(CheckSession, '/check_session', endpoint='check_session')
-api.add_resource(Login, '/login', endpoint='login')
-api.add_resource(Logout, '/logout', endpoint='logout')
-api.add_resource(RecipeIndex, '/recipes', endpoint='recipes')
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
+    app = create_app()
     app.run(port=5555, debug=True)
